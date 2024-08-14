@@ -24,7 +24,7 @@ jobs:
           - 5001:5000
 
     env:
-      TEST_TAG: localhost:5001/actions/hello-world-docer-action:latest
+      IMAGE_TAG: localhost:5001/actions/repo-tagger:latest
 
     steps:
       - name: Checkout
@@ -44,32 +44,49 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.TEST_TAG }}
-
-      - name: Run the Container
-        id: run
-        env:
-          INPUT_WHO_TO_GREET: Mona Lisa Octocat
-        run: |
-          docker run \
-            --env INPUT_WHO_TO_GREET="${{ env.INPUT_WHO_TO_GREET }}" \
-            --rm ${{ env.TEST_TAG }}
-
+          tags: ${{ env.IMAGE_TAG }}
+      
   test-action:
     name: GitHub Actions Test
     runs-on: ubuntu-latest
+    env:
+      TEST_TAG: test-tag
 
     steps:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
 
+      - name: Ensure test-tag doesn't exist
+        run: |
+          git tag | grep -v ${{ env.TEST_TAG }}
+
       - name: Test Local Action
         id: test-action
         uses: ./
         with:
-          who-to-greet: Mona Lisa Octocat
+          tag: "${{ env.TEST_TAG }}"
+      
+      - name: Ensure test-tag was created
+        run: |
+          git tag | grep ${{ env.TEST_TAG }}
+          git rev-list -n1 "${{ env.TEST_TAG }}" | grep "${{ steps.test-action.outputs.sha }}"
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: |
+          echo "${{ steps.test-action.outputs.tag }}"
+          echo "${{ steps.test-action.outputs.sha }}"
+
+      - name: Test action again - it should not override existing tag
+        id: test-again
+        uses: ./
+        with:
+          tag: "${{ env.TEST_TAG }}"
+        
+      - name: Ensure tag wasn't overriden
+        run: |
+          bash -c '[[ "${{ steps.test-again.outputs.tag }}" = "" ]] || false'
+          bash -c '[[ "${{ steps.test-again.outputs.sha }}" = "" ]] || false'
+          git rev-list -n1 "${{ env.TEST_TAG }}" | grep "${{ steps.test-action.outputs.sha }}"
+        

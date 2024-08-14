@@ -1,21 +1,20 @@
-name: Hello, World!
-description: Greet someone and record the time
-author: GitHub Actions
+name: Repo Tagger
+description: Create a git tag with provided input. Does nothing on failure.
+author: Bruno Ciconelle
 
-# Define your inputs here.
 inputs:
-  who-to-greet:
-    description: Who to greet
+  tag:
+    description: Tag that shall be created.
     required: true
-    default: World
 
-# Define your outputs here.
 outputs:
-  time:
-    description: The time we greeted you
+  tag:
+    description: Tag created. Only available if tag was actually created.
+  sha:
+    description: Commit sha of the created tag. Only available if it was actually created.
 
 runs:
   using: docker
   image: Dockerfile
   env:
-    INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
+    INPUT_TAG: ${{ inputs.tag }}
