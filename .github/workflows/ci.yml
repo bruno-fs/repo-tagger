@@ -51,15 +51,19 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TEST_TAG: test-tag
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
 
       - name: Ensure test-tag doesn't exist
         run: |
-          git tag | grep -v ${{ env.TEST_TAG }}
+          git tag -l | grep -v '${{ env.TEST_TAG }}'
 
       - name: Test Local Action
         id: test-action
@@ -69,6 +73,7 @@ jobs:
       
       - name: Ensure test-tag was created
         run: |
+          git fetch --tags origin
           git tag | grep ${{ env.TEST_TAG }}
           git rev-list -n1 "${{ env.TEST_TAG }}" | grep "${{ steps.test-action.outputs.sha }}"
 
@@ -86,6 +91,7 @@ jobs:
         
       - name: Ensure tag wasn't overriden
         run: |
+          git fetch --tags origin
           bash -c '[[ "${{ steps.test-again.outputs.tag }}" = "" ]] || false'
           bash -c '[[ "${{ steps.test-again.outputs.sha }}" = "" ]] || false'
           git rev-list -n1 "${{ env.TEST_TAG }}" | grep "${{ steps.test-action.outputs.sha }}"
