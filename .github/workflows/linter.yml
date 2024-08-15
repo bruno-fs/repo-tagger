@@ -25,10 +25,8 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install pre-commit & other dev dependencies
+        run: pip install -r dev-requirements.txt
+
       - name: Lint Codebase
-        id: super-linter
-        uses: super-linter/super-linter/slim@v6
-        env:
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: true
+        run: pre-commit run --all-files --hook-stage=manual --show-diff-on-failure

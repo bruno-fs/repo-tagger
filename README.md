@@ -1,12 +1,13 @@
 # Repo Tagger
 
-[![GitHub Super-Linter](https://github.com/actions/repo-tagger/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/actions/repo-tagger/actions/workflows/ci.yml/badge.svg)
 
 An extremely simple action that will create a tag in your repo pointing to current commit.
 If the tag already exists, the action won't fail, but also won't do anything.
 
 By design, this is a very simple and won't do any parsing to guess which tag should be used.
+Furthermore, this action won't create any release. Instead, this action can be used alongside
+other actions to accomplish the creation of a release.
 
 ## Usage
 
@@ -28,7 +29,7 @@ jobs:
     name: Tag repo
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # required to be able to write tags
+      contents: write # required to be able to write tags
 
     steps:
       # Change @main to a specific commit SHA or version tag, e.g.:
@@ -55,8 +56,7 @@ For example workflow runs, check out the
 
 ## Outputs
 
-| Output | Description             |
+| Output | Description                        |
 | ------ | ---------------------------------- |
 | `tag`  | If created, tag name.              |
 | `sha`  | If created, commit sha of the tag. |
-

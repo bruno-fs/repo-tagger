@@ -1,6 +1,8 @@
 FROM registry.access.redhat.com/ubi9/ubi-minimal
 
-RUN microdnf update -y && microdnf install -y python3 python3-pip
+RUN microdnf update -y && \
+    microdnf install -y python3 python3-pip && \
+    microdnf clean all
 
 USER 1001
 

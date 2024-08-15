@@ -45,7 +45,7 @@ jobs:
           context: .
           push: true
           tags: ${{ env.IMAGE_TAG }}
-      
+
   test-action:
     name: GitHub Actions Test
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
           tag: "${{ env.TEST_TAG }}"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      
+
       - name: Ensure test-tag was created
         run: |
           git fetch --tags origin
@@ -88,14 +88,14 @@ jobs:
           tag: "${{ env.TEST_TAG }}"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        
+
       - name: Ensure tag wasn't overriden
         run: |
           bash -c '[[ "${{ steps.test-again.outputs.tag }}" = "" ]] || false'
           bash -c '[[ "${{ steps.test-again.outputs.sha }}" = "" ]] || false'
           git fetch --tags origin
           git rev-list -n1 "${{ env.TEST_TAG }}" | grep "${{ steps.test-action.outputs.sha }}"
-      
+
       - name: Get rid of testing tag
         run: |
           git push --delete origin "${{ env.TEST_TAG }}"
