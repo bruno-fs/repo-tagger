@@ -1,6 +1,6 @@
 # Repo Tagger
 
-![CI](https://github.com/actions/repo-tagger/actions/workflows/ci.yml/badge.svg)
+[![Continuous Integration](https://github.com/bruno-fs/repo-tagger/actions/workflows/ci.yml/badge.svg)](https://github.com/bruno-fs/repo-tagger/actions/workflows/ci.yml)
 
 An extremely simple action that will create a tag in your repo pointing to current commit.
 If the tag already exists, the action won't fail, but also won't do anything.
