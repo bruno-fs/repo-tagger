@@ -2,6 +2,10 @@ name: Repo Tagger
 description: Create a git tag with provided input. Does nothing on failure.
 author: Bruno Ciconelle
 
+branding:
+  icon: tag
+  color: red
+
 inputs:
   tag:
     description: Tag that shall be created.
