@@ -52,7 +52,7 @@ jobs:
     env:
       TEST_TAG: test-tag
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout
@@ -61,15 +61,13 @@ jobs:
         with:
           fetch-tags: true
 
-      - name: Ensure test-tag doesn't exist
-        run: |
-          git tag -l | grep -v '${{ env.TEST_TAG }}'
-
       - name: Test Local Action
         id: test-action
         uses: ./
         with:
           tag: "${{ env.TEST_TAG }}"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       
       - name: Ensure test-tag was created
         run: |
@@ -88,11 +86,16 @@ jobs:
         uses: ./
         with:
           tag: "${{ env.TEST_TAG }}"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         
       - name: Ensure tag wasn't overriden
         run: |
-          git fetch --tags origin
           bash -c '[[ "${{ steps.test-again.outputs.tag }}" = "" ]] || false'
           bash -c '[[ "${{ steps.test-again.outputs.sha }}" = "" ]] || false'
+          git fetch --tags origin
           git rev-list -n1 "${{ env.TEST_TAG }}" | grep "${{ steps.test-action.outputs.sha }}"
-        
+      
+      - name: Get rid of testing tag
+        run: |
+          git push --delete origin "${{ env.TEST_TAG }}"

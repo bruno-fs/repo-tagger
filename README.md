@@ -21,13 +21,14 @@ on:
       tag:
         description: git tag that should be created
         required: true
-        default: ''
         type: string
 
 jobs:
   say-hello:
     name: Tag repo
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # required to be able to write tags
 
     steps:
       # Change @main to a specific commit SHA or version tag, e.g.:
@@ -37,7 +38,9 @@ jobs:
         id: tag-repo
         uses: actions/repo-tagger@main
         with:
-          tag: ${{ inputs.tag }}
+          tag: "${{ inputs.tag }}"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 ```
 
 For example workflow runs, check out the
@@ -46,14 +49,14 @@ For example workflow runs, check out the
 
 ## Inputs
 
-| Input | Default | Description                          |
-| ----- | ------- | ------------------------------------ |
-| `tag` | ``      | That that shall be added to the repo |
+| Input | Description                          |
+| ----- | ------------------------------------ |
+| `tag` | That that shall be added to the repo |
 
 ## Outputs
 
 | Output | Description             |
-| ------ | --------------------------------- |
-| `tag` | If created, tag name.              |
-| `sha` | If created, commit sha of the tag. |
+| ------ | ---------------------------------- |
+| `tag`  | If created, tag name.              |
+| `sha`  | If created, commit sha of the tag. |
 
